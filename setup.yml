@@ -1,0 +1,14 @@
+---
+- hosts: all
+  tasks:
+  # - name: cloning Stock Repo and setting up
+  #   git: name="git@github.com:dineshkumar-cse/Stock.git" dest="~/Desktop/stock"
+
+  # - homebrew: name=pyenv,pyenv-virtualenv state=latest
+  #   when: ansible_os_family == "Darwin"
+
+  - shell: "{{ item }}"
+    with_items:
+    - easy_install pip
+    - cd ~/Desktop/Stock && pip install -r requirements.txt
+    - python stock_market.py
