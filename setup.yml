@@ -13,10 +13,19 @@
   - homebrew: name=pyenv,pyenv-virtualenv state=latest
     when: ansible_os_family == "Darwin"
 
-  - shell: "cd {{repo_location}}/stock  && {{ item }}"
-    with_items:
-    - pyenv install $(cat .py-version)
-    - pyenv virtualenv $(cat .py-version) $(cat .python-version)
+  - shell: "cd {{repo_location}}/stock && pyenv versions | grep $(cat .py-version)"
+    register: pyversion_exists
+
+  - name: installing pyenv python version
+    command: "cd {{repo_location}}/stock  && pyenv install $(cat .py-version)"
+    when: pyversion_exists.stdout==""
+
+  - shell: "cd {{repo_location}}/stock && pyenv versions | grep $(cat .python-version)"
+    register: venv_exists
+
+  - name: installing pyenv virtualenvironment
+    command: pyenv virtualenv $(cat .py-version) $(cat .python-version)
+    when: venv_exists.stdout==""
 
   - shell: "cd {{repo_location}}/stock && {{ item }}"
     with_items:
